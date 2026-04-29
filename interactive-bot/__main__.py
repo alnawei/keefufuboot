@@ -127,7 +127,7 @@ async def send_contact_card(
         [
             InlineKeyboardButton(
                 f"{'🏆 高级会员' if user.is_premium else '✈️ 普通会员' }",
-                url=f"https://github.com/MiHaKun/Telegram-interactive-bot",
+                url=f"https://github.com/",
             )
         ]
     )
@@ -346,7 +346,7 @@ async def forwarding_message_u2a(update: Update, context: ContextTypes.DEFAULT_T
             )
     except Exception as e:
         await update.message.reply_html(
-            f"发送失败: {e}\n请联系 @MrMiHa 汇报这个错误。谢谢"
+            f"发送失败: {e}\n请联系 @QS00008 汇报这个错误。谢谢"
         )
 
 
@@ -456,7 +456,7 @@ async def forwarding_message_a2u(update: Update, context: ContextTypes.DEFAULT_T
 
     except Exception as e:
         await update.message.reply_html(
-            f"发送失败: {e}\n请联系 @MrMiHa 汇报这个错误。谢谢"
+            f"发送失败: {e}\n请联系 @QS00008 汇报这个错误。谢谢"
         )
 
 
