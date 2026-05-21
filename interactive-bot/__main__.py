@@ -179,8 +179,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"你好管理员 {user.first_name}({user.id})\n\n欢迎使用 {app_name} 机器人。\n\n 目前你的配置完全正确。可以在群组 <b> {bg.title} </b> 中使用机器人。"
         )
     else:
-        await update.message.reply_html(
-            f"{mention_html(user.id, user.full_name)} 同学：\n\n{welcome_message}"
+        # 1. 定义底部菜单按钮
+            keyboard = [
+                [KeyboardButton("✈️ 代理个人版"), KeyboardButton("✈️ 代理独享版")],
+                [KeyboardButton("✨ 代开飞机会员"), KeyboardButton("🆙 飞机账号")],
+                [KeyboardButton("🌍 全球VPN定制"), KeyboardButton("🔰 实名人脸")]
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+            
+            # 2. 发送带按钮的欢迎语
+            await update.message.reply_html(
+                f"{mention_html(user.id, user.full_name)} 同学: \n\n{welcome_message}",
+                reply_markup=reply_markup
         )
 
 
@@ -233,7 +243,7 @@ async def callback_query_vcode(update: Update, context: ContextTypes.DEFAULT_TYP
             await query.answer(f"正确，欢迎。")
             sent = await context.bot.send_message(
                 update.effective_chat.id,
-                f"{mention_html(user.id, user.first_name)} , 欢迎。",
+                f"{mention_html(user.id, user.first_name)} , 欢迎咨询，\n如有问题请一次说清。",
                 parse_mode="HTML",
             )
             context.user_data["is_human"] = True
@@ -523,14 +533,132 @@ async def error_in_send_media_group(update: Update, context: ContextTypes.DEFAUL
     )
     return ConversationHandler.END
 
-
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Log the error and send a telegram message to notify the developer."""
     # Log the error before we do anything else, so we can see it even if something breaks.
     logger.error(f"Exception while handling an update: {context.error} ")
     logger.debug(f"Exception detail is :", exc_info=context.error)
 
+# ==========================================
+# 第一部分：定义菜单回复逻辑（必须在启动模块的上方）
+# ==========================================
+async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+    
+    if text == "✈️ 代理个人版":
+        await update.message.reply_html(
+            "<b>✈️ 飞机代理个人版（Socks5）</b>\n\n"
+            "<b>【月付】</b>\n"
+            "20G     5U\n"
+            "40G    10U\n"
+            "60G    15U\n\n"
+            "<b>【季付】</b>\n"
+            "50G    15U\n"
+            "100G   30U\n"
+            "300G   45U\n\n"
+            "<b>【年付】</b>\n"
+            "500G   70U\n"
+            "700G  100U\n"
+            "1000G 130U\n\n"
+            "<b>⚠️ 友情提醒：</b>\n"
+            "代理含有异地风控系统，共享泛滥会导致冻结，所以<b>只能一个人使用</b>，一旦冻结不退不换！\n\n"
+            "<b>📖 个人版代理使用教程：</b>\n"
+            "1、在收藏夹点击链接，进入通道选择页面；\n"
+            "<i>（如果进不去，需借助加速器节点）</i>\n"
+            "2、进入页面后，关闭第三方加速器节点。点击绿色可连接通道，自动跳转，点击“连接代理”。\n"
+            "3、线路不可用的情况，先删掉不可用的代理、重新去启用面板启用就行。另可能是设备连接了VPN，线路冲突，显示代理不可用，建议关闭VPN，重新启用代理。\n"
+            "4、如出现网页点击启用不跳转，原因是网页未识别到设备上的电报软件，建议卸载浏览器和电报APP，重新安装尝试。"
+        )
+    elif text == "✈️ 代理独享版":
+        await update.message.reply_html(
+            "<b>💠 MTProto 独享代理方案</b>\n\n"
+            "<b>【资费标准】</b>\n"
+            "◈ 独享代理：<code>100U / 月</code>\n"
+            "◈ 广告推广插件：<code>+10U / 月</code>\n\n"
+            "<b>【可选地区】</b>\n"
+            "📍 新加坡、香港、日本、韩国\n"
+            "📍 美国、加拿大、德国、印度等\n\n"
+            "—— —— —— —— —— ——\n\n"
+            "<b>❓ 什么是代理赞助商（Proxy Sponsor）推广？</b>\n\n"
+            "<b>✅ 核心原理：</b>\n"
+            "只要用户连接了您的代理，您的频道就会<b>强制置顶显示</b>在用户的会话列表最上方。\n\n"
+            "<b>✅ 强制曝光：</b>\n"
+            "只有当用户点击并关注了您的频道，该置顶才会消失。这是目前电报生态内<b>转化率最高、粉丝增长最快</b>的引流方式。\n\n"
+            "<b>✅ 流量价值：</b>\n"
+            "每日千人级别真实活跃用户连接，持续为您的频道注入精准流量，极大提升品牌/业务曝光度。\n\n"
+            "📢 <i>需要开通请联系人工客服。</i>"
+        )
+    elif text == "✨ 代开飞机会员":
+        await update.message.reply_html(
+            "<b>🌟 Telegram Premium 高级会员秒开</b>\n\n"
+            "<b>【会员资费】</b>\n"
+            "✈️  3个月会员：<code>20U</code>\n"
+            "✈️  6个月会员：<code>35U</code>\n"
+            "✈️ 12个月会员：<code>50U</code>\n"
+            "📛 <b>无需密码：</b>只需提供 <u>用户名</u> 即可！\n\n"
+            "<b>👑 开通会员六大特权：</b>\n"
+            "1️⃣ <b>专属标志：</b>尊贵会员标识及动态头像\n"
+            "2️⃣ <b>降低风险：</b>有效防止双向限制，降低注销风险\n"
+            "3️⃣ <b>多端登录：</b>手机支持4开，电脑支持6开账号\n"
+            "4️⃣ <b>专属表情：</b>会员专属贴纸、表情包无限使用\n"
+            "5️⃣ <b>功能翻倍：</b>列表/群组/频道上限等多项功能翻倍\n"
+            "6️⃣ <b>极速体验：</b>享受专线带宽，看片秒开不卡顿\n\n"
+        )
+    elif text == "🆙 飞机账号":
+        await update.message.reply_html(
+            "<b>🆙 Telegram 成品账号（老号/稳定号）</b>\n\n"
+            "<b>【规格与价格】</b>\n"
+            "◈ 普通成品号：<code>10U</code>\n"
+            "◈ 半年稳定号：<code>15U</code>\n"
+            "◈ 一年超稳号：<code>20U</code>\n\n"
+            "<b>【覆盖地区】</b>\n"
+            "📍 美国、英国、法国、中国、香港、孟加拉、印度等随机地区\n\n"
+        )
+    elif text == "🌍 全球VPN定制":
+        await update.message.reply_html(
+            "<b>🌍 全球跨平台 VPN 定制服务</b>\n\n"
+            "<b>【产品优势】</b>\n"
+            "✅ <b>不限制设备数量</b>，支持全家/全公司共享\n"
+            "✅ 协议全支持：Socks5, HTTP, VMess, V2ray, 小火箭等\n"
+            "✅ 连接方式：扫码一键配置、L2TP、PPTP、Windows端\n\n"
+            "—— —— —— —— —— ——\n\n"
+            "<b>🚩主流地区（香港、新加坡、日本、韩国、印尼、美国等）</b>\n"
+            "🔹 普通线路：<code>60U / 月</code>\n"
+            "🔹 优质纯净IP：<code>80U / 月</code>\n"
+            "🔹 TikTok运营级：<code>120U / 月</code>\n\n"
+            "<b>🚩小众及其他地区（包含中国一线/省会城市）</b>\n"
+            "🔸 普通线路：<code>100U / 月</code>\n"
+            "🔸 优质纯净IP：<code>120U / 月</code>\n"
+            "🔸 TikTok运营级：<code>150U / 月</code>\n\n"
+            "—— —— —— —— —— ——\n\n"
+            "<b>🛠 其他定制说明：</b>\n"
+            "◈ <b>特殊链接：</b>如需windows L2TP、PPTP 等特殊协议，加收 <code>40U</code>\n"
+            "⚠️ <i>注：所有节点均保证带宽稳定，适合工作室、外贸及专业运营使用。</i>"
+        )
+    elif text == "🔰 实名人脸":  # 或者是你对应的云业务按钮名
+        await update.message.reply_html(
+            "<b>☁️ 各类云平台实名账号</b>\n\n"
+            "<b>【核心服务】</b>\n"
+            "✅ 代付款  ✅ 代充值  ✅ 代购买\n\n"
+            "<b>【支持平台】</b>\n"
+            "☁️ 阿里云 ｜ 个人/企业实名\n"
+            "☁️ 腾讯云 ｜ 个人/企业实名\n"
+            "☁️ 华为云 ｜ 个人/企业实名\n"
+            "☁️ 天翼云 ｜ 个人/企业实名\n"
+            "☁️ 七牛云 ｜ 个人/企业实名\n"
+            "☁️ 百度云 ｜ 个人/企业实名\n\n"
+            "<b>【适用场景】</b>\n"
+            "🔰 各种IDC、网站、CDN分发等\n\n"
+            "<b>【资费标准】</b>\n"
+            "💰 个人实名：<code>80U</code>\n"
+            "💰 企业实名：<code>100U</code>\n\n"
+            "✅ <i>有需要的客户请联系人工客服。</i>"
+        )
 
+
+# ==========================================
+# 第二部分：程序的启动与注册模块
+# ==========================================
 if __name__ == "__main__":
     pickle_persistence = PicklePersistence(filepath=f"./assets/{app_name}.pickle")
     application = (
@@ -541,6 +669,15 @@ if __name__ == "__main__":
     )
 
     application.add_handler(CommandHandler("start", start, filters.ChatType.PRIVATE))
+
+    # ====== 新加的菜单拦截器（准确放在转发功能上方） ======
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^(✈️ 代理个人版|✈️ 代理独享版|✨ 代开飞机会员|🆙 飞机账号|🌍 全球VPN定制|🔰 实名人脸)$") & filters.ChatType.PRIVATE, 
+            menu_auto_reply
+        )
+    )
+    # =======================================================
 
     application.add_handler(
         MessageHandler(
