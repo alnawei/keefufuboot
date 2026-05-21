@@ -6,7 +6,7 @@ from string import ascii_letters as letters
 
 import httpx
 import telegram
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.error import BadRequest
 from telegram.ext import (
     ApplicationBuilder,
