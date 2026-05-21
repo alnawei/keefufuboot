@@ -649,7 +649,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "━━━━━━━━━━━━━━━\n"
             "📖 <b>官方使用教程</b>\n"
             "🔹 <a href='https://t.me/JiedianSsr/224 '>电报内置代理使用教程 (必看)</a>\n\n"
-            "🔹 <可以认真阅读，每一句话都有用\n购买商品了的用户，从第四条开始操作！\n\n"
+            "🔹 【可以认真阅读，每一句话都有用，购买商品了的用户，从第四条开始操作！】\n\n"
             "🛒 <b>自助下单中心</b>\n"
             "🔸 <a href='https://tgdomo.com?code=YT0zJmI9Mw%3D%3D'>TG 代理下单地址 (Telegram专用代理)</a>\n"
             "🔸 <a href='https://tgdomo.com?code=YT04JmI9NTA%3D'>机场节点下单地址 (小火箭)</a>\n"
@@ -694,6 +694,8 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "5️⃣ <b>功能翻倍：</b>列表/群组/频道上限等多项功能翻倍\n"
             "6️⃣ <b>极速体验：</b>享受专线带宽，看片秒开不卡顿\n\n"
         )
+        return
+
     elif text == "🆙 飞机账号":
         await update.message.reply_html(
             "<b>🆙 Telegram 成品账号（老号/稳定号）</b>\n\n"
@@ -704,6 +706,8 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "<b>【覆盖地区】</b>\n"
             "📍 美国、英国、法国、中国、香港、孟加拉、印度等随机地区\n\n"
         )
+        return
+
     elif text == "🌍 全球VPN定制":
         await update.message.reply_html(
             "<b>🌍 全球跨平台 VPN 定制服务</b>\n\n"
@@ -725,6 +729,8 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "◈ <b>特殊链接：</b>如需windows L2TP、PPTP 等特殊协议，加收 <code>40U</code>\n"
             "⚠️ <i>注：所有节点均保证带宽稳定，适合工作室、外贸及专业运营使用。</i>"
         )
+        return
+
     elif text == "🔰 实名人脸":  # 或者是你对应的云业务按钮名
         await update.message.reply_html(
             "<b>☁️ 各类云平台实名账号</b>\n\n"
@@ -744,6 +750,8 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "💰 企业实名：<code>100U</code>\n\n"
             "✅ <i>有需要的客户请联系人工客服。</i>"
         )
+        return
+
     return await forwarding_message_u2a(update, context)
 
 # ==========================================
