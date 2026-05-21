@@ -573,7 +573,8 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_html(
             "<b>💠 MTProto 独享代理方案</b>\n\n"
             "<b>【资费标准】</b>\n"
-            "◈ 独享代理：<code>100U / 月</code>\n"
+            "◈ 独享代理：<code>100U / 月</code>\n" 
+            "✅ 家庭  ✅ 团队  ✅ 公司\n\n"
             "◈ 广告推广插件：<code>+10U / 月</code>\n\n"
             "<b>【可选地区】</b>\n"
             "📍 新加坡、香港、日本、韩国\n"
