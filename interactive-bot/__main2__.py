@@ -623,10 +623,8 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 1. 第一优先级：拦截无效沟通（以后想多拦什么词，直接往里加）
     useless_words = ["1", "你好", "在吗", "有人吗", "客服", "hi", "人工", "人工客服", "hello"]
-    # --- 2. 纯数字拦截 (少于5位数，如 1, 12, 112, 6666) ---
-    # isdigit() 判断是否为纯数字，len(text) < 5 判断位数
-    is_short_number = text.isdigit() and len(text) < 5
-    if text.lower() in useless_words or is_short_number:
+    # 2. 直接判断是否在无用词库内
+    if text.lower() in useless_words:
         await update.message.reply_html(
             "🤖 <b>系统提示：</b>\n\n"
             "为了节约您的时间，请<b>直接详细说明您的问题</b>，或发送<b>订单截图</b>。"
