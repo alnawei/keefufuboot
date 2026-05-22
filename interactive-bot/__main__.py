@@ -543,7 +543,19 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 # 第一部分：定义菜单回复逻辑（必须在启动模块的上方）
 # ==========================================
 async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
+    text = update.message.text.strip()
+
+    # 1. 第一优先级：拦截无效沟通（以后想多拦什么词，直接往里加）
+    useless_words = ["1", "你好", "在吗", "有人吗", "客服", "hi", "人工", "人工客服", "hello"]
+    # 2. 直接判断是否在无用词库内
+    if text.lower() in useless_words:
+        await update.message.reply_html(
+            "🤖 <b>系统提示：</b>\n\n"
+            "为了节约您的时间，请<b>直接详细说明您的问题</b>，或发送<b>订单截图</b>。"
+        )
+        return  # 拦截成功，不再往下走
+
+    # 2. 第二优先级：识别菜单按钮（这里就是你原本的那些按钮逻辑）
     
     if text == "✈️ 代理个人版":
         await update.message.reply_html(
@@ -593,9 +605,9 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_html(
             "<b>🌟 Telegram Premium 高级会员秒开</b>\n\n"
             "<b>【会员资费】</b>\n"
-            "✈️  3个月会员：<code>20U</code>\n"
-            "✈️  6个月会员：<code>35U</code>\n"
-            "✈️ 12个月会员：<code>50U</code>\n"
+            "✈️  3个月会员：<code>25U</code>\n"
+            "✈️  6个月会员：<code>45U</code>\n"
+            "✈️ 12个月会员：<code>70U</code>\n"
             "📛 <b>无需密码：</b>只需提供 <u>用户名</u> 即可！\n\n"
             "<b>👑 开通会员六大特权：</b>\n"
             "1️⃣ <b>专属标志：</b>尊贵会员标识及动态头像\n"
@@ -655,7 +667,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "💰 企业实名：<code>100U</code>\n\n"
             "✅ <i>有需要的客户请联系人工客服。</i>"
         )
-
+    return await forwarding_message_u2a(update, context)
 
 # ==========================================
 # 第二部分：程序的启动与注册模块
@@ -671,18 +683,16 @@ if __name__ == "__main__":
 
     application.add_handler(CommandHandler("start", start, filters.ChatType.PRIVATE))
 
-    # ====== 新加的菜单拦截器（准确放在转发功能上方） ======
+       # 第一个：负责所有文字（拦截+按钮+文字转发）
     application.add_handler(
-        MessageHandler(
-            filters.Regex("^(✈️ 代理个人版|✈️ 代理独享版|✨ 代开飞机会员|🆙 飞机账号|🌍 全球VPN定制|🔰 实名人脸)$") & filters.ChatType.PRIVATE, 
-            menu_auto_reply
-        )
+        MessageHandler(filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE, menu_auto_reply)
     )
-    # =======================================================
 
+    # 第二个：负责图片和文件（不收文字，直接转发）
     application.add_handler(
         MessageHandler(
-            ~filters.COMMAND & filters.ChatType.PRIVATE, forwarding_message_u2a
+            (~filters.COMMAND & ~filters.TEXT) & filters.ChatType.PRIVATE, 
+            forwarding_message_u2a
         )
     )
     application.add_handler(
