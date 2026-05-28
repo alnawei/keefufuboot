@@ -581,6 +581,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "3、线路不可用的情况，先删掉不可用的代理、重新去启用面板启用就行。另可能是设备连接了VPN，线路冲突，显示代理不可用，建议关闭VPN，重新启用代理。\n"
             "4、如出现网页点击启用不跳转，原因是网页未识别到设备上的电报软件，建议卸载浏览器和电报APP，重新安装尝试。"
         )
+        return
     elif text == "✈️ 代理独享版":
         await update.message.reply_html(
             "<b>💠 MTProto 独享代理方案</b>\n\n"
@@ -601,6 +602,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "每日千人级别真实活跃用户连接，持续为您的频道注入精准流量，极大提升品牌/业务曝光度。\n\n"
             "📢 <i>需要开通请联系人工客服。</i>"
         )
+        return
     elif text == "✨ 代开飞机会员":
         await update.message.reply_html(
             "<b>🌟 Telegram Premium 高级会员秒开</b>\n\n"
@@ -617,6 +619,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "5️⃣ <b>功能翻倍：</b>列表/群组/频道上限等多项功能翻倍\n"
             "6️⃣ <b>极速体验：</b>享受专线带宽，看片秒开不卡顿\n\n"
         )
+        return
     elif text == "🆙 飞机账号":
         await update.message.reply_html(
             "<b>🆙 Telegram 成品账号（老号/稳定号）</b>\n\n"
@@ -627,6 +630,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "<b>【覆盖地区】</b>\n"
             "📍 美国、英国、法国、中国、香港、孟加拉、印度等随机地区\n\n"
         )
+        return
     elif text == "🌍 全球VPN定制":
         await update.message.reply_html(
             "<b>🌍 全球跨平台 VPN 定制服务</b>\n\n"
@@ -648,6 +652,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "◈ <b>特殊链接：</b>如需windows L2TP、PPTP 等特殊协议，加收 <code>40U</code>\n"
             "⚠️ <i>注：所有节点均保证带宽稳定，适合工作室、外贸及专业运营使用。</i>"
         )
+        return
     elif text == "🔰 实名人脸":  # 或者是你对应的云业务按钮名
         await update.message.reply_html(
             "<b>☁️ 各类云平台实名账号</b>\n\n"
@@ -667,6 +672,7 @@ async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "💰 企业实名：<code>100U</code>\n\n"
             "✅ <i>有需要的客户请联系人工客服。</i>"
         )
+        return
     return await forwarding_message_u2a(update, context)
 
 # ==========================================
