@@ -201,6 +201,7 @@ async def check_human(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # 2分钟内禁言
             await update.message.reply_html("你已经被禁言,请稍后再尝试。")
             return False
+        
         file_name = random.choice(os.listdir("./assets/imgs"))
         code = file_name.replace("image_", "").replace(".png", "")
         file = f"./assets/imgs/{file_name}"
@@ -208,23 +209,40 @@ async def check_human(update: Update, context: ContextTypes.DEFAULT_TYPE):
         codes.append(code)
         random.shuffle(codes)
 
-        photo = context.bot_data.get(f"image|{code}")
-        if not photo:
-            # 没发送过，就用内置图片。
-            photo = file
+        # 构建按钮及文字
         buttons = [
             InlineKeyboardButton(x, callback_data=f"vcode_{x}_{user.id}") for x in codes
         ]
         button_matrix = [buttons[i : i + 4] for i in range(0, len(buttons), 4)]
-        sent = await update.message.reply_photo(
-            photo,
-            f"{mention_html(user.id, user.first_name)}请选择图片中的文字。回答错误将无法联系客服。",
-            reply_markup=InlineKeyboardMarkup(button_matrix),
-            parse_mode="HTML",
-        )
-        # 存下已经发送过的图片
-        biggest_photo = sorted(sent.photo, key=lambda x: x.file_size, reverse=True)[0]
-        context.bot_data[f"image|{code}"] = biggest_photo.file_id
+        caption = f"{mention_html(user.id, user.first_name)}请选择图片中的文字。回答错误将无法联系客服。"
+
+        # 获取缓存的 file_id
+        photo_cached = context.bot_data.get(f"image|{code}")
+        
+        try:
+            if not photo_cached:
+                raise BadRequest("No cached photo") # 没有缓存时故意抛出异常，进入重新上传的逻辑
+            
+            # 1. 尝试使用缓存的 file_id 发送
+            sent = await update.message.reply_photo(
+                photo=photo_cached,
+                caption=caption,
+                reply_markup=InlineKeyboardMarkup(button_matrix),
+                parse_mode="HTML",
+            )
+        except BadRequest:
+            # 2. 如果 file_id 失效，或者初次读取，会进入此代码块，直接读取本地文件上传
+            with open(file, "rb") as local_photo:
+                sent = await update.message.reply_photo(
+                    photo=local_photo,
+                    caption=caption,
+                    reply_markup=InlineKeyboardMarkup(button_matrix),
+                    parse_mode="HTML",
+                )
+            # 3. 存下最新有效的 file_id 覆盖掉旧数据
+            biggest_photo = sorted(sent.photo, key=lambda x: x.file_size, reverse=True)[0]
+            context.bot_data[f"image|{code}"] = biggest_photo.file_id
+
         context.user_data["vcode"] = code
         await delete_message_later(60, sent.chat.id, sent.message_id, context)
         return False
