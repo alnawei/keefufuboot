@@ -41,6 +41,46 @@ from .utils import delete_message_later
 Base.metadata.create_all(bind=engine)
 db = SessionMaker()
 
+# ==========================================
+# 消息过滤词库
+# ==========================================
+
+# 完全匹配：整条消息必须完全一致
+EXACT_MATCH_WORDS = [
+    "1",
+    "你好",
+    "在吗", 
+    "有人吗", 
+    "客服",
+    "hi",
+    "人工", 
+    "人工客服",
+    "hello"
+]
+
+# 包含匹配：消息中只要出现这些词就拦截
+INCLUDE_MATCH_WORDS = [
+    "快搜百万",
+    "锁定低价",
+    "退订广告",
+]
+
+
+def is_blocked_message(text: str) -> bool:
+    if not text:
+        return False
+
+    text_lower = text.strip().lower()
+
+    # 完全匹配
+    if text_lower in EXACT_MATCH_WORDS:
+        return True
+
+    # 包含匹配
+    if any(word.lower() in text_lower for word in INCLUDE_MATCH_WORDS):
+        return True
+
+    return False
 
 # 延时发送媒体组消息的回调
 async def _send_media_group_later(context: ContextTypes.DEFAULT_TYPE):
@@ -348,6 +388,16 @@ async def inline_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 
 
 async def forwarding_message_u2a(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    # 检查文字消息 / 图片、视频等消息的 Caption
+    text = update.message.text or update.message.caption or ""
+
+    if is_blocked_message(text):
+        logger.info(
+            f"拦截消息 user_id={update.effective_user.id}: {text!r}"
+        )
+        return
+
     if not disable_captcha:
         if not await check_human(update, context):
             return
@@ -638,23 +688,9 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 # ==========================================
 async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
-    text_lower = text.lower()
 
-    # 1. 完全匹配词库
-    exact_match_words = ["1", "你好", "在吗", "有人吗", "客服", "hi", "人工", "人工客服", "hello"]
-
-    # 2. 包含匹配词库
-    include_match_words = [
-        "快搜百万",
-        "锁定低价",
-        "退订广告",
-    ]
-
-    # 3. 核心判断
-    is_exact = text_lower in exact_match_words
-    is_include = any(word.lower() in text_lower for word in include_match_words)
-
-    if is_exact or is_include:
+    # 消息过滤
+    if is_blocked_message(text):
         await update.message.reply_html(
             "🤖 <b>系统提示：</b>\n\n"
             "为了节约您的时间，请<b>直接详细说明您的问题</b>，或发送<b>订单截图</b>。"
