@@ -88,6 +88,18 @@ async def _send_media_group_later(context: ContextTypes.DEFAULT_TYPE):
     media_group_id = job.data
     _, from_chat_id, target_id, dir = job.name.split("_")
 
+    # 用户发送的相册如果已经被判定为广告，则整个相册不再转发
+    if dir == "u2a":
+        user_data = context.application.user_data.get(int(from_chat_id), {})
+        blocked_groups = user_data.get("blocked_media_groups", set())
+
+        if media_group_id in blocked_groups:
+            blocked_groups.discard(media_group_id)
+            logger.info(
+                f"拦截广告相册 user_id={from_chat_id}, media_group_id={media_group_id}"
+            )
+            return
+
     # 数据库内查找对应的媒体组消息。
     media_group_msgs = (
         db.query(MediaGroupMesssage)
@@ -393,6 +405,15 @@ async def forwarding_message_u2a(update: Update, context: ContextTypes.DEFAULT_T
     text = update.message.text or update.message.caption or ""
 
     if is_blocked_message(text):
+        media_group_id = update.message.media_group_id
+
+        # 如果是相册，记录这个相册已被拦截
+        if media_group_id:
+            blocked_groups = context.user_data.setdefault(
+                "blocked_media_groups", set()
+            )
+            blocked_groups.add(media_group_id)
+
         logger.info(
             f"拦截消息 user_id={update.effective_user.id}: {text!r}"
         )
