@@ -638,16 +638,28 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 # ==========================================
 async def menu_auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
+    text_lower = text.lower()
 
-    # 1. 第一优先级：拦截无效沟通（以后想多拦什么词，直接往里加）
-    useless_words = ["1", "你好", "在吗", "有人吗", "客服", "hi", "人工", "人工客服", "hello"]
-    # 2. 直接判断是否在无用词库内
-    if text.lower() in useless_words:
+    # 1. 完全匹配词库
+    exact_match_words = ["1", "你好", "在吗", "有人吗", "客服", "hi", "人工", "人工客服", "hello"]
+
+    # 2. 包含匹配词库
+    include_match_words = [
+        "快搜百万",
+        "锁定低价",
+        "退订广告",
+    ]
+
+    # 3. 核心判断
+    is_exact = text_lower in exact_match_words
+    is_include = any(word.lower() in text_lower for word in include_match_words)
+
+    if is_exact or is_include:
         await update.message.reply_html(
             "🤖 <b>系统提示：</b>\n\n"
             "为了节约您的时间，请<b>直接详细说明您的问题</b>，或发送<b>订单截图</b>。"
         )
-        return  # 拦截成功，不再往下走
+        return
 
     # 2. 第二优先级：识别菜单按钮（这里就是你原本的那些按钮逻辑）
     
