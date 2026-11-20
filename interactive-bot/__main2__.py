@@ -19,6 +19,7 @@ from telegram.ext import (
     filters,
 )
 from telegram.helpers import mention_html
+from .durable_queue import start_durable_polling
 
 from db.database import SessionMaker, engine
 from db.model import Base, FormnStatus, MediaGroupMesssage, MessageMap, User
@@ -523,6 +524,7 @@ async def forwarding_message_u2a(update: Update, context: ContextTypes.DEFAULT_T
         await update.message.reply_html(
             f"发送失败: {e}\n请联系 @QS00008 汇报这个错误。谢谢"
         )
+        raise
 
 
 async def forwarding_message_a2u(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -633,6 +635,7 @@ async def forwarding_message_a2u(update: Update, context: ContextTypes.DEFAULT_T
         await update.message.reply_html(
             f"发送失败: {e}\n请联系 @QS00008 汇报这个错误。谢谢"
         )
+        raise
 
 
 async def clear(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -879,4 +882,4 @@ if __name__ == "__main__":
         # 这样写可以拦截所有悬挂按钮的点击
     application.add_handler(CallbackQueryHandler(inline_menu_callback))
     application.add_error_handler(error_handler)
-    application.run_polling()
+    start_durable_polling(application)
